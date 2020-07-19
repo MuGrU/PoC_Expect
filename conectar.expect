@@ -1,0 +1,28 @@
+#!/usr/bin/expect
+
+set timeout 5
+set Nhost [lindex $argv 0]
+set Nuser [lindex $argv 1]
+set Npasswd [lindex $argv 2]
+
+send_user "\n\n###############################################################################\n"
+send_user "# Conectando ao host $Nhost\n"
+send_user "###############################################################################\n"
+
+spawn ssh -q -o StrictHostKeyChecking=no $Nuser@$Nhost
+expect "password:"
+send  "$Npasswd\r"
+expect "~"
+send "kinit $Nuser\r"
+expect "Password"
+send "$Npasswd\r"
+expect "~"
+send "klist\r"
+expect "$Nuser"
+expect "~"
+send "kdestroy\r"
+expect "~"
+send "klist\r"
+expect "No credentials" 
+send "exit\r"
+send_user "\n\n###############################################################################\n"
